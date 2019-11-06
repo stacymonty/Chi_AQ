@@ -31,16 +31,18 @@ ncfile= Dataset(dir+emis,'r')
 df_lat,df_lon=pd.DataFrame(lat),pd.DataFrame(lon)
 no2= pd.DataFrame(Dataset(dir+emis,'r')['NO2'][13][0][:])*10e2
 df=pd.DataFrame(no2[:])
+
+#find all rows and columns where the change is 0 and drop them
 no2_drop=df.loc[~(df==0).all(axis=1)]
 
-# drop outside parts that are 0 in the array
+# given where no2 values are 0, filter out the lat lons
+# ie. drop the outside parts that are 0 change in the array
 data= np.array(df.loc[~(df==0).all(axis=1)])
 lat= np.array(df_lat.loc[~(df==0).all(axis=1)])
 lon= np.array(df_lon.loc[~(df==0).all(axis=1)])
 
 
 # files
-
 emis1='emis_20180801_noSchoolnoBusnoRefuse_minus_base.nc'
 
 #pull in files and variables
