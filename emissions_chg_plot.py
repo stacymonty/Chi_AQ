@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-------------------------------------------
+#------------------------------------------
 # Libraries
 #--------------
 from matplotlib import pyplot as plt ; from matplotlib import colors
