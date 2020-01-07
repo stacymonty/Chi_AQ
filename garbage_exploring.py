@@ -1,3 +1,5 @@
+# HELLO!!!!!
+
 # This code is truly nonsensical
 # Basically a scratch sheet of coding notes
 
