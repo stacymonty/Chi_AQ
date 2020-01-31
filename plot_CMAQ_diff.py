@@ -71,6 +71,7 @@ def pull_CMAQ(dir_CMAQ_BASE,startswith,cmaq_var,version):
       tmp = np.asarray([ncfile_CMAQ_base[j][cmaq_var[i]] for j in range(len(ncfile_CMAQ_base))])
       hourly = np.average(tmp,axis=0) # hour by hour concs
       daily = np.average(tmp,axis=1) # daily average concs
+   #
       monthly = np.average(daily,axis=0)
       if writeoutcsv == True: pd.DataFrame(monthly[0]).to_csv(cmaq_var[i]+'_'+version+'_BASE_2018_aug.csv', header=False,index=False) 
       cmaq_avgs_BASE.append(monthly[0])
@@ -80,6 +81,10 @@ def pull_CMAQ(dir_CMAQ_BASE,startswith,cmaq_var,version):
       print('Done with ' +cmaq_var[i])
 #return
    return cmaq_avgs_BASE, cmaq_avgs_daily_BASE, cmaq_avgs_hourly_BASE, units_cmaq
+
+
+#writeoutcsv = false
+
 
 
 #plot cmaq
