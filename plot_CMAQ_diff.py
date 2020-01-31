@@ -51,7 +51,7 @@ startswith = "CCTM_ACONC_"
 
 #pull in cmaq
 startswith = "CCTM_ACONC"
-
+hours = range(0,12) # consider offset range(23,4)
 
 #writeoutcsv = false
 def pull_CMAQ(dir_CMAQ_BASE,startswith,cmaq_var,version):
@@ -69,6 +69,7 @@ def pull_CMAQ(dir_CMAQ_BASE,startswith,cmaq_var,version):
    # make averages for cmaq base
    for i in range(len(cmaq_var)):
       tmp = np.asarray([ncfile_CMAQ_base[j][cmaq_var[i]] for j in range(len(ncfile_CMAQ_base))])
+      # tmp = np.asarray([ncfile_CMAQ_base[j][cmaq_var[i]][hours] for hours in range(hours) for j in range(len(ncfile_CMAQ_base))])
       hourly = np.average(tmp,axis=0) # hour by hour concs
       daily = np.average(tmp,axis=1) # daily average concs
    #
