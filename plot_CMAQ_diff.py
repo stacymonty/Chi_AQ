@@ -24,10 +24,10 @@ dir='/projects/b1045/jschnell/ForStacy/'
 ll='latlon_ChicagoLADCO_d03.nc' 
 
 # dir to model files
-dir_CMAQ = '/projects/b1045/wrf-cmaq/output/Chicago_LADCO/output_Amy_noBUS_1.33km_sf_rrtmg_5_8_1_v3852/'
+dir_CMAQ = '/projects/b1045/wrf-cmaq/output/Chicago_LADCO/output_Amy_noMUNI_1.33km_sf_rrtmg_5_8_1_v3852/postprocess/'
 
 
-dir_CMAQ_BASE = '/projects/b1045/wrf-cmaq/output/Chicago_LADCO/output_BASE_FINAL_1.33km_sf_rrtmg_5_8_1_v3852/' # experimental choice
+dir_CMAQ_BASE = '/projects/b1045/wrf-cmaq/output/Chicago_LADCO/output_BASE_FINAL_1.33km_sf_rrtmg_5_8_1_v3852/postprocess/' # experimental choice
 
 dir_WRF='/projects/b1045/wrf-cmaq/output/Chicago_LADCO/output_BASE_FINAL_1.33km_sf_rrtmg_5_8_1_v3852/'
 
@@ -43,15 +43,15 @@ show = True
 cmaq_var=['O3','NO2','NO','NOX','CO','ISOP','SO2','FORM','PM25_TOT','PM10']
 cmaq_var=['O3','NO2','NO','CO','ISOP','SO2','FORM']
 
-startswith = "CCTM_ACONC_"
+startswith = "COMBINE_ACONC_"
 
 # ---------------------------------------------------------------------
 # USER DEF FUNCTIONS
 # ---------------------------------------------------------------------
 
 #pull in cmaq
-startswith = "CCTM_ACONC"
-hours = range(0,12) # consider offset range(23,4)
+startswith = "COMBINE_ACONC"
+
 
 #writeoutcsv = false
 def pull_CMAQ(dir_CMAQ_BASE,startswith,cmaq_var,version):
@@ -69,7 +69,6 @@ def pull_CMAQ(dir_CMAQ_BASE,startswith,cmaq_var,version):
    # make averages for cmaq base
    for i in range(len(cmaq_var)):
       tmp = np.asarray([ncfile_CMAQ_base[j][cmaq_var[i]] for j in range(len(ncfile_CMAQ_base))])
-      # tmp = np.asarray([ncfile_CMAQ_base[j][cmaq_var[i]][hours] for hours in range(hours) for j in range(len(ncfile_CMAQ_base))])
       hourly = np.average(tmp,axis=0) # hour by hour concs
       daily = np.average(tmp,axis=1) # daily average concs
    #
@@ -96,7 +95,7 @@ def plot_cmaq(monthly_tot,var_tot,title_2,cmap,vmaxs,vmins,crs_new,show,add_epa,
    #for i in range(1):
       # set var for plot
       var= var_tot[i]
-      data= np.asarray(monthly_tot[i])*1000
+      data= np.asarray(monthly_tot[i])
       if var == 'RAINC': pass
       else:
          if i<len(cmaq_var): plon,plat = lon,lat
@@ -105,6 +104,7 @@ def plot_cmaq(monthly_tot,var_tot,title_2,cmap,vmaxs,vmins,crs_new,show,add_epa,
          fig, axs = plt.subplots(subplot_kw={'projection': crs_new},figsize=(6, 6))
          #set up data for plotting via levels
          vmax,vmin=vmaxs[i],vmins[i]
+#for i in range(1):
          levels = np.arange(vmin, vmax, (vmax-vmin)/10)
          # set boundary as outer extent by making a matplotlib path object and adding that geometry
          if shaped: axs.set_boundary(mpath.Path(outsideofunion.T,closed=True), transform= crs_new, use_as_clip_path=True)
@@ -112,8 +112,8 @@ def plot_cmaq(monthly_tot,var_tot,title_2,cmap,vmaxs,vmins,crs_new,show,add_epa,
          #plot the gridded data by using contourf
          if div==False: cs=plt.pcolormesh(plon,plat,data,cmap= cmap , transform=crs_new, vmin=vmin,vmax=vmax)
          if div == True:
-            divnorm = colors.DivergingNorm(vmin=vmin, vcenter=0, vmax= vmax)
-            cs=plt.pcolormesh(plon,plat,data,cmap= cmap , transform=crs_new, vmin=vmin,vmax=vmax, norm=divnorm)
+               divnorm = colors.DivergingNorm(vmin=vmin, vcenter=0, vmax= vmax)
+               cs=plt.pcolormesh(plon,plat,data,cmap= cmap , transform=crs_new, vmin=vmin,vmax=vmax, norm=divnorm)
 #for i in range(1):
          # add landmarks with scatterplot
          midway=  -87.7522,41.7868
@@ -131,7 +131,7 @@ def plot_cmaq(monthly_tot,var_tot,title_2,cmap,vmaxs,vmins,crs_new,show,add_epa,
          # title
          axs.set_title(var+title_2)
          #add colorbar and label
-         cbar=plt.colorbar(cs,boundaries=levels)
+         cbar=plt.colorbar(cs,boundaries=levels,shrink = 0.5)
          cbar.set_ticks(levels)
          # add state lines
          states_provinces = cfeature.NaturalEarthFeature(category='cultural',name='admin_1_states_provinces_lines',scale='50m',facecolor='none')
@@ -230,10 +230,31 @@ epa_avgs_latlon[0]['Arithmetic Mean'] = epa_avgs_latlon[0]['Arithmetic Mean']*10
 
 #pull in cmaq
 
-startswith = "CCTM_ACONC"
+startswith = "COMBINE_ACONC"
 version = '_aug2018_monthly_nobusdiff'
 base_monthly, base_daily, base_hourly, units = pull_CMAQ(dir_CMAQ_BASE,startswith,cmaq_var,version)
-nobus_monthly, nobus_daily, nobus_hourly, units = pull_CMAQ(dir_CMAQ,startswith,cmaq_var,version)
+
+#pull in cmaq
+startswith = "COMBINE_ACONC"
+version2 = '_aug2018_monthly_nomunidiff'
+dir_CMAQ='/projects/b1045/wrf-cmaq/output/Chicago_LADCO/output_Amy_noMUNI_1.33km_sf_rrtmg_5_8_1_v3852/postprocess/'
+nomuni_monthly, nomuni_daily, nomuni_hourly, units = pull_CMAQ(dir_CMAQ,startswith,cmaq_var,version2)
+
+#pull in cmaq
+
+#pull in cmaq
+startswith = "COMBINE_ACONC"
+version3 = '_aug2018_monthly_nobusdiff'
+dir_CMAQ='/projects/b1045/wrf-cmaq/output/Chicago_LADCO/output_Amy_noBUS_1.33km_sf_rrtmg_5_8_1_v3852/postprocess/'
+nobus_monthly, nobus_daily, nobus_hourly, units = pull_CMAQ(dir_CMAQ,startswith,cmaq_var,version3)
+
+
+
+#pull in cmaq
+startswith = "COMBINE_ACONC"
+version4 = '_aug2018_monthly_noschooldiff'
+dir_CMAQ='/projects/b1045/wrf-cmaq/output/Chicago_LADCO/output_Amy_noSCHOOL_1.33km_sf_rrtmg_5_8_1_v3852/postprocess/'
+noschool_monthly, noschool_daily, noschool_hourly, units = pull_CMAQ(dir_CMAQ,startswith,cmaq_var,version4)
 
 
 #----------  START PLOTTING
@@ -246,26 +267,71 @@ outsideofunion=pd.DataFrame([list(union[0][2].exterior.xy)[0], list(union[0][2].
 
 
 # version and title STUFF
-title_2 = " nobus-base, Aug. 2018"
-var_tot = cmaq_var 
-monthly_tot = [nobus_monthly[i]-base_monthly[i] for i in range(len(base_monthly))]
-cmap = 'magma_r'
-version = '_nobusDIFF_aug2018_'
-
+title_2 = " %diff no MUNI, Aug. 2018"
+var_tot = cmaq_var cmap = 'magma_r'
+version = '_nomuniDIFF_aug2018_'
+#monthly_tot = [nomuni_monthly[i]-base_monthly[i] for i in range(len(base_monthly))]
+monthly_tot = [(nomuni_monthly[i]-base_monthly[i])/base_monthly[i]*100 for i in range(len(base_monthly))]
 
 # SET RANGES
-vmaxs,vmins = [round(np.percentile(monthly_tot[i],99.99),5)*1000 for i in range(len(monthly_tot))],[round(np.percentile(monthly_tot[i],0.1),5)*1000 for i in range(len(monthly_tot))]
+vmaxs,vmins = [round(np.percentile(monthly_tot[i],99.999),2) for i in range(len(monthly_tot))],[round(np.percentile(monthly_tot[i],0.01),2) for i in range(len(monthly_tot))]
 
 # DO WE EPA SCATTER
 add_epa = False #True
+div = True
+if div==True: cmap = 'RdBu_r'
+shaped= True
+show=False
 
-#is it a difference map
+version = '_nomuni_PERCENTDIFF_aug2018_'
+
+plot_cmaq(monthly_tot,var_tot,title_2,cmap,vmaxs,vmins,crs_new,show,add_epa,version,div,shaped)
+
+#================ no bus percent diff
+# version and title STUFF
+title_2 = " %diff no BUS, Aug. 2018"
+var_tot = cmaq_var cmap = 'magma_r'
+version = '_nobus_PERCENTDIFF_aug2018_'
+#monthly_tot = [nobus_monthly[i]-base_monthly[i] for i in range(len(base_monthly))]
+monthly_tot = [(nobus_monthly[i]-base_monthly[i])/base_monthly[i]*100 for i in range(len(base_monthly))]
+
+# SET RANGES
+vmaxs,vmins = [round(np.percentile(monthly_tot[i],99.999),2) for i in range(len(monthly_tot))],[round(np.percentile(monthly_tot[i],0.01),2) for i in range(len(monthly_tot))]
+
+# DO WE EPA SCATTER
+add_epa = False #True
 div = True
 if div==True: cmap = 'RdBu_r'
 
 shaped= True
+show=False
 
 plot_cmaq(monthly_tot,var_tot,title_2,cmap,vmaxs,vmins,crs_new,show,add_epa,version,div,shaped)
+
+
+#================ no SCHOOL percent diff
+
+
+# version and title STUFF
+title_2 = " %diff no SCHOOL, Aug. 2018"
+var_tot = cmaq_var cmap = 'magma_r'
+version = '_noSCHOOL_PERCENTDIFF_aug2018_'
+#monthly_tot = [noschool_monthly[i]-base_monthly[i] for i in range(len(base_monthly))]
+monthly_tot = [(noschool_monthly[i]-base_monthly[i])/base_monthly[i]*100 for i in range(len(base_monthly))]
+
+# SET RANGES
+vmaxs,vmins = [round(np.percentile(monthly_tot[i],99.999),2) for i in range(len(monthly_tot))],[round(np.percentile(monthly_tot[i],0.01),2) for i in range(len(monthly_tot))]
+
+# DO WE EPA SCATTER
+add_epa = False #True
+div = True
+if div==True: cmap = 'RdBu_r'
+
+shaped= True
+show=False
+
+plot_cmaq(monthly_tot,var_tot,title_2,cmap,vmaxs,vmins,crs_new,show,add_epa,version,div,shaped)
+
 
 
 #---- base case
