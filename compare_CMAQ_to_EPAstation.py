@@ -187,7 +187,7 @@ for loop in range(len(epa_files)):
 
 # plot cmaq comparison
 epa_condense=[dir_epa+'%s_%s_%s_%s_EPA_CMAQ_Combine.csv'%(var[loop],domain,year,month) for loop in range(len(epa_code))]
-so2,no2,o3,co = pd.read_csv(epa_condense[i] for i in range(len(epa_condense)))
+so2_epa,no2_epa,o3_epa,co_epa = [pd.read_csv(epa_condense[i]) for i in range(len(epa_condense))]
 
 
 #1 to 1 plots
