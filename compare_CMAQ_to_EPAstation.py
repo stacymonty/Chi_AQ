@@ -44,9 +44,10 @@ dirToWRF='/projects/b1045/wrf-cmaq/output/Chicago_LADCO/'+runname+'/' # to get g
 grid='/projects/b1045/jschnell/ForStacy/latlon_ChicagoLADCO_d03.nc'
 
 # CMAQ RUN things
-domain='d02'
+domain='d03'
 time='hourly'
 year='2018'
+month='8'
 epa_code=['42401','42602','44201']; var=['SO2','NO2','O3'] #numerical identifiers and corresponding vars
 epa_files =[dir_epa+'%s_%s_%s.csv'%(time,epa_code[i],year,) for i in range(len(epa_code))]
 
@@ -179,7 +180,16 @@ for loop in range(len(epa_files)):
             dff['CMAQ'][24*numday+ station*len(t_index):(24*numday+ station*len(t_index)+24)]=s[station]
             #dff['level_0'][(24*numday+ station*len(t_index)):(24*numday+ station*len(t_index)+24)] # check eq    
     #
-   dff.to_csv(dir_epa+'%s_%s_EPA_CMAQ_Combine.csv'%(var[loop],domain));
+   dff.to_csv(dir_epa+'%s_%s_%s_%s_EPA_CMAQ_Combine.csv'%(var[loop],domain,year,month));
     #
    print('Done with %s'%(var[loop]));
 
+
+# plot cmaq comparison
+epa_condense=[dir_epa+'%s_%s_%s_%s_EPA_CMAQ_Combine.csv'%(var[loop],domain,year,month) for loop in range(len(epa_code))]
+so2,no2,o3,co = pd.read_csv(epa_condense[i] for i in range(len(epa_condense)))
+
+
+#1 to 1 plots
+o3df=o3.groupby('Site Num')
+o3df.plot.scatter('Sample Measurement','CMAQ',title='Site Num')
