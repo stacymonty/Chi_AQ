@@ -6,14 +6,14 @@
 #          pull & format aqs data for comparison
 # 
 
-# Link to air tech website with year you're interested in
+# Link to air tech website with year you're interested in -- NOT WORKING
 #linktoaqs='http://files.airnowtech.org/?prefix=airnow/2018/'
 # USE: 
 #---------------------------------------------------------#
 
 # LIBRARIES
 #---------------------------------------------------------#
-from datetime import timedelta, date; import pandas as pd
+from datetime import timedelta, date, datetime; import pandas as pd
 import numpy as np
 from netCDF4 import Dataset
 from wrf import latlon_coords, getvar
@@ -44,7 +44,7 @@ dirToWRF='/projects/b1045/wrf-cmaq/output/Chicago_LADCO/'+runname+'/' # to get g
 grid='/projects/b1045/jschnell/ForStacy/latlon_ChicagoLADCO_d03.nc'
 
 # CMAQ RUN things
-domain='d03'
+domain='d02'
 time='hourly'
 year='2018'
 epa_code=['42401','42602','44201']; var=['SO2','NO2','O3'] #numerical identifiers and corresponding vars
@@ -150,8 +150,8 @@ for file in glob.glob("COMBINE_ACONC_*"):
 
 cmaq_files.sort()
 dates=[cmaq_files[z].split("COMBINE_ACONC_")[1].split(".nc")[0] for z in range(len(cmaq_files))]
-start_dt=date(int(dates[0][0:4]),int(dates[0][4:6]),int(dates[0][6:8]))
-end_dt=date(int(dates[-1][0:4]),int(dates[-1][4:6]),int(dates[-1][6:8]))
+start_dt=datetime(int(dates[0][0:4]),int(dates[0][4:6]),int(dates[0][6:8]))
+end_dt=datetime(int(dates[-1][0:4]),int(dates[-1][4:6]),int(dates[-1][6:8]),23)
 
 
 # Get cmaq grid
@@ -164,8 +164,7 @@ llat,ulat,llon,ulon=cmaq_lat.min(), cmaq_lat.max(), cmaq_lon.min(), cmaq_lon.max
 cmaq=[Dataset(dir_cmaq+cmaq_files[i]) for i in range(len(cmaq_files))]
 t_index = pd.DatetimeIndex(start=start_dt, end=end_dt, freq='1h')
 
-# drop last day to make loop better
-t_index= t_index[:-1]
+# drop last day to make loop better?
 
 # Loop through each variable and check
 for loop in range(len(epa_files)):
@@ -179,9 +178,8 @@ for loop in range(len(epa_files)):
       for station in range(len(xx)):
             dff['CMAQ'][24*numday+ station*len(t_index):(24*numday+ station*len(t_index)+24)]=s[station]
             #dff['level_0'][(24*numday+ station*len(t_index)):(24*numday+ station*len(t_index)+24)] # check eq    
-   # Save out file 
+    #
    dff.to_csv(dir_epa+'%s_%s_EPA_CMAQ_Combine.csv'%(var[loop],domain));
+    #
    print('Done with %s'%(var[loop]));
-
-
 
