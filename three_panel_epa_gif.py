@@ -5,13 +5,9 @@ from matplotlib import pyplot as plt ; from matplotlib import colors
 import numpy as np; import numpy.ma as ma; from matplotlib.patches import Path, PathPatch
 import pandas as pd; from shapely.geometry import Point, shape, Polygon;import fiona
 from shapely.ops import unary_union, cascaded_union; from geopandas.tools import sjoin
-import geopandas as gpd; import geoplot; import glob; import os; from datetime import timedelta, date;
-from netCDF4 import Dataset
-import scipy.ndimage; from cartopy import crs as ccrs; from cartopy.io.shapereader import Reader
-import matplotlib.path as mpath; import seaborn as sns
-import timeit
-from cartopy import crs as ccrs
-import cartopy
+import geopandas as gpd; import glob; import os; from datetime import timedelta, date;
+from netCDF4 import Dataset; from cartopy import crs as ccrs; from cartopy.io.shapereader import Reader
+import matplotlib.path as mpath; import seaborn as sns; import timeit; from cartopy import crs as ccrs
 
 import matplotlib.gridspec as gridspec
 from scipy.stats import pearsonr
