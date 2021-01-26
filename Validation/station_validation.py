@@ -1,4 +1,11 @@
+
+
 # model validation table for CHEMICALS
+# model validation table for ground-based
+# Uses wrf and cmaq output
+# Epa data from AQS yearly summaries
+# NCDC stations are loaded in
+# created normalized and non-normalized testing statistics ...
 
 import pandas as pd
 import numpy as np
